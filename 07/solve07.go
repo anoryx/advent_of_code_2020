@@ -6,8 +6,9 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
+
+	"../aocutil"
 )
 
 func main() {
@@ -43,7 +44,7 @@ func solveA(input []string) int {
 	for i := 0; i < len(shinyBagHolders); i++ {
 		edges := nodeMap[shinyBagHolders[i]].inbound
 		for _, e := range edges {
-			if !containsString(shinyBagHolders, e.color) {
+			if !aocutil.ContainsString(shinyBagHolders, e.color) {
 				shinyBagHolders = append(shinyBagHolders, e.color)
 			}
 		}
@@ -74,9 +75,9 @@ func lineParser(line string) (string, []*edge) {
 	containers := lineParts[1]
 	re := regexp.MustCompile(`(?P<count>\d+) (?P<color>[a-z\s]+?) bag`)
 	for _, container := range strings.Split(containers, ", ") {
-		matchMap := getRegexpMap(re, container)
+		matchMap := aocutil.GetRegexpMap(re, container)
 		if matchMap["count"] != "" {
-			newEdge := &edge{matchMap["color"], MustAtoi(matchMap["count"])}
+			newEdge := &edge{matchMap["color"], aocutil.MustAtoi(matchMap["count"])}
 			edges = append(edges, newEdge)
 		}
 	}
@@ -122,34 +123,4 @@ func countContainers(c string, m map[string]adjacent) int {
 	}
 	return sum
 
-}
-
-// MustAtoi converts string to int, or panics
-func MustAtoi(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
-	return i
-}
-
-// getRegexpMap parses a regexp and returns a map of named matches
-func getRegexpMap(re *regexp.Regexp, s string) map[string]string {
-	matches := re.FindStringSubmatch(s)
-	matchNames := re.SubexpNames()
-	matchMap := map[string]string{}
-	for i, n := range matches {
-		matchMap[matchNames[i]] = n
-	}
-	return matchMap
-}
-
-// containsString searches a string of arrays for a string member
-func containsString(arr []string, s string) bool {
-	for _, v := range arr {
-		if v == s {
-			return true
-		}
-	}
-	return false
 }

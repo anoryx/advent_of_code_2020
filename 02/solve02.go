@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strconv"
+
+	"../aocutil"
 )
 
 func main() {
@@ -63,20 +64,11 @@ func ParseLine(input string) PasswordPolicy {
 	re := regexp.MustCompile(`[-:\s]+`)
 	match := re.Split(input, -1)
 	return PasswordPolicy{
-		min:      MustAtoi(match[0]),
-		max:      MustAtoi(match[1]),
+		min:      aocutil.MustAtoi(match[0]),
+		max:      aocutil.MustAtoi(match[1]),
 		letter:   match[2],
 		password: match[3],
 	}
-}
-
-// MustAtoi is a helper
-func MustAtoi(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
-	return i
 }
 
 // PasswordPolicy manages puzzle data

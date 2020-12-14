@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 	"sort"
-	"strconv"
+
+	"../aocutil"
 )
 
 func main() {
@@ -20,8 +21,7 @@ func main() {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		num, _ := strconv.Atoi(scanner.Text())
-		nums = append(nums, num)
+		nums = append(nums, aocutil.MustAtoi(scanner.Text()))
 	}
 
 	if err := scanner.Err(); err != nil {

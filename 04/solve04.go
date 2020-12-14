@@ -6,8 +6,9 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
+
+	"../aocutil"
 )
 
 func main() {
@@ -92,24 +93,24 @@ func validatePassport(passport string) bool {
 			// 4 digits 1920 <= x <= 2002
 			re := regexp.MustCompile(`^\d{4}$`)
 			if !(re.MatchString(item.value) &&
-				MustAtoi(item.value) >= 1920 &&
-				MustAtoi(item.value) <= 2002) {
+				aocutil.MustAtoi(item.value) >= 1920 &&
+				aocutil.MustAtoi(item.value) <= 2002) {
 				return false
 			}
 		case "iyr":
 			// 4 digits 2010 <= x <= 2020
 			re := regexp.MustCompile(`^\d{4}$`)
 			if !(re.MatchString(item.value) &&
-				MustAtoi(item.value) >= 2010 &&
-				MustAtoi(item.value) <= 2020) {
+				aocutil.MustAtoi(item.value) >= 2010 &&
+				aocutil.MustAtoi(item.value) <= 2020) {
 				return false
 			}
 		case "eyr":
 			// 4 digits; 2020 <= x <= 2030
 			re := regexp.MustCompile(`^\d{4}$`)
 			if !(re.MatchString(item.value) &&
-				MustAtoi(item.value) >= 2020 &&
-				MustAtoi(item.value) <= 2030) {
+				aocutil.MustAtoi(item.value) >= 2020 &&
+				aocutil.MustAtoi(item.value) <= 2030) {
 				return false
 			}
 		case "hgt":
@@ -117,17 +118,12 @@ func validatePassport(passport string) bool {
 			// "cm": 150 <= x <= 193
 			// "in": 59 <= x <= 76
 			re := regexp.MustCompile(`^(?P<height>\d+)(?P<unit>in|cm)$`)
-			subMatches := re.FindStringSubmatch(item.value)
-			if subMatches == nil {
+			matchMap := aocutil.GetRegexpMap(re, item.value)
+			if len(matchMap) == 0 {
 				return false
 			}
-			subNames := re.SubexpNames()
-			subMap := map[string]string{}
-			for i, n := range subMatches {
-				subMap[subNames[i]] = n
-			}
-			height := MustAtoi(subMap["height"])
-			unit := subMap["unit"]
+			height := aocutil.MustAtoi(matchMap["height"])
+			unit := matchMap["unit"]
 			validHeight := (unit == "in" && height >= 59 && height <= 76) ||
 				(unit == "cm" && height >= 150 && height <= 193)
 			if !validHeight {
@@ -142,7 +138,7 @@ func validatePassport(passport string) bool {
 		case "ecl":
 			// is member of validColors
 			validColors := []string{"amb", "blu", "brn", "gry", "grn", "hzl", "oth"}
-			if !containsString(validColors, item.value) {
+			if !aocutil.ContainsString(validColors, item.value) {
 				return false
 			}
 		case "pid":
@@ -154,25 +150,6 @@ func validatePassport(passport string) bool {
 		}
 	}
 	return true
-}
-
-// MustAtoi converts string to int, or panics
-func MustAtoi(s string) int {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
-	}
-	return i
-}
-
-// containsString searches a string of arrays for a string member
-func containsString(arr []string, s string) bool {
-	for _, v := range arr {
-		if v == s {
-			return true
-		}
-	}
-	return false
 }
 
 // PassportField is a very simple helper struct
